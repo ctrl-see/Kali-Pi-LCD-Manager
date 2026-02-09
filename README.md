@@ -1,4 +1,4 @@
- ~ ~ ~ ~ ~ ~ ~ Kali Pi LCD Manager ~ ~ ~ ~ ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~ Kali Pi LCD Manager ~ ~ ~ ~ ~ ~ ~
 
 Automates install and setup process for LCD-show-kali, as well as forces rotate on restart.
 
@@ -30,7 +30,7 @@ Automates install and setup process for LCD-show-kali, as well as forces rotate 
 
  - That's it!
 
-= = = = = Installation = = = = =
+# = = = = = Installation = = = = =
 
  - Run in terminal:
     cd ~/Documents
