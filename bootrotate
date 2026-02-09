@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Purpose: Automates rotation on startup after install is executed
+# Author: ctrl-see | 2.9.2026 | github.com/ctrl-see
+
+# Path definition so Cron remembers how to do commands
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Directory definitions
+kalipidisplaydir="$HOME/Documents/Kali_Pi_LCD_Manager"
+scriptpath="$kalipidisplaydir/install"
+rotateshpath="$kalipidisplaydir/LCD-show-kali"
+
+# Main logic
+sleep 5
+if [ -f "$kalipidisplaydir/rotateme.txt" ]; then
+  rotation=$(grep "DisplayRotation=" "$scriptpath" | cut -d'=' -f2)
+  rm "$kalipidisplaydir/rotateme.txt"
+  cd "$rotateshpath" || exit
+  sudo "./rotate.sh" "$rotation"
+fi

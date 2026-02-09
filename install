@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Purpose: Set up or easily switch to a 3.5in screen on a Raspberry Pi
+# running Kali Linux when the provided drivers are incompatible.
+# Author: ctrl-see | 2.9.2026 | github.com/ctrl-see
+
+# Configuration
+DisplayRotation=270
+Repo=https://github.com/lcdwiki/LCD-show-kali.git
+show=LCD35-show
+
+# Directories definitions
+install_location="$HOME/Documents"
+mkdir -p "$install_location"
+kalipidisplaydir="$install_location/Kali_Pi_LCD_Manager"
+bindir="$kalipidisplaydir/bin"
+libdir="$kalipidisplaydir/lib"
+mkdir -p "$kalipidisplaydir" "$bindir" "$libdir"
+
+# Cron & bootrotate configuration
+cron_user=$(logname || echo $USER)
+user_home=$(eval echo "~$cron_user")
+bootrotate="$user_home/Documents/Kali_Pi_LCD_Manager/bootrotate"
+cron_script="@reboot /bin/bash $bootrotate > $user_home/Documents/Kali_Pi_LCD_Manager/cron_log.txt 2>&1"
+
+# Main Logic
+echo "Updating system..."
+sudo apt update
+echo "Cleaning up a bit..."
+sudo rm -rf "$kalipidisplaydir/LCD-show-kali"
+echo "Downloading drivers..."
+git clone "$Repo" "$kalipidisplaydir/LCD-show-kali"
+echo "Setting permissions..."
+sudo chmod -R 755 "$kalipidisplaydir/LCD-show-kali"
+
+# Rotation Logic
+if [[ "$DisplayRotation" != "0" ]]; then
+  if touch "$kalipidisplaydir/rotateme.txt"; then
+    echo "Successfully created rotate flag!"
+  else
+    echo "Could not create rotate flag. Please check permissions! In the meantime,"
+    echo "you must manually use the rotate.sh script from $kalipidisplaydir/LCD-show-kali."
+    sleep 5
+  fi
+  if crontab -l 2>/dev/null | grep -q "$bootrotate"; then
+    echo "Startup job already exists! Skipping..."
+  else
+    echo "Adding $bootrotate to crontab..."
+    (crontab -l 2>/dev/null; echo "$cron_script") | crontab -
+    sudo chmod 700 "$bootrotate"
+  fi
+  else
+  echo "Rotation is 0. Skipping flag creation."
+fi
+
+# Execution
+echo "Executing $show..."
+cd "$kalipidisplaydir/LCD-show-kali" || { echo "Failed to enter directory $kalipidisplay/LCD-show-kali"; exit 1; }
+if sudo "./$show"; then
+  echo "Drivers installed and executed! Restarting..."
+  sleep 2
+  sudo reboot
+else
+  echo "Could not execute $show. Check errors above."
+  exit 1
+fi
