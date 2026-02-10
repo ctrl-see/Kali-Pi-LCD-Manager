@@ -13,9 +13,7 @@ show=LCD35-show
 install_location="$HOME/Documents"
 mkdir -p "$install_location"
 kalipidisplaydir="$install_location/Kali_Pi_LCD_Manager"
-bindir="$kalipidisplaydir/bin"
-libdir="$kalipidisplaydir/lib"
-mkdir -p "$kalipidisplaydir" "$bindir" "$libdir"
+mkdir -p "$kalipidisplaydir"
 
 # Cron & bootrotate configuration
 cron_user=$(logname || echo $USER)
